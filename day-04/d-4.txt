@@ -1,0 +1,230 @@
+Jenkins 
+What is Jenkins?
+Jenkins is an open-source automation tool used for Continuous Integration (CI) and Continuous Deployment (CD).
+It automatically:
+•	Builds code
+•	Tests code
+•	Deploys applications
+Whenever changes are pushed to GitHub.
+Why Jenkins is Used
+•	Automates manual work
+•	Saves time
+•	Reduces human errors
+•	Ensures code is always tested and ready
+How Jenkins is Used in Your Project (Git + Docker Example)
+You are using:
+•	Ubuntu
+•	GitHub
+•	Node.js app
+•	Docker
+Here’s how Jenkins fits:
+Step-by-Step Flow
+1️ Developer pushes code to GitHub
+git add .
+git commit -m "Updated app"
+git push
+2️ Jenkins Detects Change
+Jenkins is connected to GitHub.
+When new code is pushed, Jenkins automatically starts a job.
+3️ Jenkins Builds the Project
+Jenkins:
+•	Pulls latest code from GitHub
+
+
+•	Runs:
+•	docker build -t myapp .
+
+4  Jenkins Runs or Deploys Container
+
+Jenkins can run:
+
+docker run -d -p 3000:3000 myapp
+
+Now the updated app is deployed automatically.
+
+Simple Architecture Flow
+
+Developer → GitHub → Jenkins → Docker Build → Docker Run → Application Live
+
+Important Jenkins Concepts Job
+A task Jenkins performs (build, test, deploy).
+
+Pipeline
+
+A series of steps automated in order (build → test → deploy).
+
+Plugin
+
+Extra tools to connect Jenkins with GitHub, Docker, etc.
+
+Jenkins Installation - (Ubuntu 24.04)
+1	Install Java (Required for Jenkins)
+
+Jenkins needs Java to run.
+
+•	Update system (already done):
+•	sudo apt update
+•	sudo apt upgrade
+•	Install Java 21 (Eclipse Temurin)
+•	Verify:
+•	java –version
+
+2	Add Jenkins Repository & Install
+
+•	Add Jenkins GPG key and repository
+•	Update package list
+•	Install Jenkins:
+•	sudo apt install jenkins
+•	Check status:
+•	systemctl status jenkins
+ 
+Jenkins service should be active and running. 3 Customize Jenkins Service
+•	Stop Jenkins:
+•	sudo systemctl stop jenkins
+•	Edit service configuration:
+•	sudo systemctl edit jenkins
+•	Add custom JAVA_OPTS or plugin directory if needed.
+•	Reload and restart Jenkins.
+
+This allows changing:
+
+•	Java options
+•	Temp directory
+•	Plugin directory
+
+4	Fix Directory Permissions
+
+•	Create required directories
+•	Change ownership:
+•	sudo chown -R jenkins:jenkins /path
+
+Ensures Jenkins has proper access.
+
+5	Start Jenkins & Check Logs
+
+•	Start service:
+•	sudo systemctl start jenkins
+•	View logs:
+•	journalctl -u jenkins Confirms Jenkins started successfully. 6 Web UI Setup
+1.	Open browser:
+2.	http://your-server-ip:8080
+3.	Copy initial admin password from:
+4.	/var/lib/jenkins/secrets/initialAdminPassword
+5.	Paste password
+6.	Install suggested plugins
+7.	Create admin user
+
+Now Jenkins dashboard is ready.
+ 
+ 
+
+
+
+
+Jenkins Freestyle Job – Step by Step
+1 Create Job1 (Normal Freestyle Job)
+
+1.	Open Jenkins → Click New Item
+2.	Enter Job1 as name → Select Freestyle project → Click OK
+3.	In Build section → Click Add build step → Execute shell
+4.	Enter commands:
+
+echo "Hello World" pwd
+
+5.	Click Save
+ 
+ 
+
+
+
+2  Run Job1
+
+•	Click Build Now
+•	Check Console Output
+•	Hello World
+•	/var/lib/jenkins/workspace/job1
+
+3  Trigger Job2 from Job1
+
+1.	Open Job1 → Configure → Post-build Actions
+2.	Select Build other projects
+3.	Enter Job2 as the project to build
+4.	Save
+
+
+Pipeline Implementation
+Instead of multiple freestyle jobs, we can use a Pipeline.
+
+Example Pipeline Script
+pipeline {
+agent any stages {
+stage('Clone') { steps {
+git branch: 'main', url: 'https://github.com/yourrepo.git'
+}
+}
+stage('Build Docker Image') {
+ 
+steps {
+sh 'docker build -t webapp .'
+}
+}
+stage('Run Container') { steps {
+sh 'docker run -d -p 5000:5000 webapp'
+}
+}
+}
+}
+Possible Output
+
+•	Pipeline starts
+•	Git repository cloned
+•	Docker image built
+•	Container started
+•	Status: SUCCESS
+
+Build Queue Workflow (Chained Jobs)
+1.	Builder Job
+Clones repository:
+
+git clone https://github.com/yourrepo.git cd project-folder
+
+2.	Image Job
+Build Docker image:
+
+docker build -t appimage .
+
+3.	Run Job
+Run container:
+
+docker run -d -p 8050:5000 appimage
+
+This demonstrates job chaining: Builder → Image → Run
+
+
+ 
+
+ 
+
+
+Jenkins CI/CD Pipeline – Simple Explanation
+
+1. Clone Code:
+Jenkins pulls the latest project code from GitHub repository.
+
+2. Build Docker Image:
+Jenkins builds a Docker image using the Dockerfile inside the project.
+
+3. Remove Old Container:
+If an old version of the app is running, Jenkins stops and removes it.
+
+4. Run New Container:
+Jenkins starts a new Docker container using the newly built image.
+Port Mapping: 8050 (server) → 80 (container)
+
+5. Verify Deployment:
+Jenkins checks running containers using 'docker ps'.
+
+Final Result:
+The application is live at: http://<server-ip>:8050
+
+Whenever code is pushed to GitHub, Jenkins can automatically rebuild and redeploy the application. This is Continuous Integration and Continuous Deployment (CI/CD).
