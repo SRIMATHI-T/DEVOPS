@@ -1,0 +1,243 @@
+VMware, Ubuntu, Docker, Node.js, and GitHub
+1. VMware Setup (Windows)
+
+Install VMware Workstation Player.
+
+Create Ubuntu Server VM with:
+
+4 GB RAM
+
+20 GB Disk
+
+NAT Network
+
+Start the VM and log in.
+
+2. Ubuntu Server Initial Configuration
+sudo apt update
+sudo apt upgrade -y
+ip a
+sudo apt install openssh-server -y
+sudo systemctl start ssh
+sudo systemctl enable ssh
+sudo ufw allow ssh
+sudo ufw reload
+
+
+Explanation:
+
+sudo apt update → Update package lists.
+
+sudo apt upgrade -y → Upgrade installed packages.
+
+ip a → Check IP address.
+
+openssh-server → Enable SSH access.
+
+ufw → Configure firewall for SSH.
+
+3. SSH from Windows PowerShell
+ssh username@VM_IP
+
+
+Verify connectivity before remote development.
+
+4. VS Code Remote SSH Setup
+
+Install VS Code.
+
+Install Remote - SSH Extension.
+
+Connect using SSH:
+
+hostname
+
+
+Confirm you’re connected to the remote VM.
+
+5. Docker Installation on Ubuntu
+sudo apt install ca-certificates curl -y
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+
+Explanation:
+
+Installs Docker engine, CLI, and plugins.
+
+Adds current user to docker group for non-root usage.
+
+6. Docker Image Workflow
+docker build -t image_name:tag .
+docker images
+docker run -d -p host_port:container_port image_name:tag
+docker login
+docker tag image_name:tag username/repository:tag
+docker push username/repository:tag
+docker pull username/repository:tag
+docker ps
+docker stop container_name
+docker rm container_name
+docker rmi image_name
+
+
+Key Terms:
+
+Image → Blueprint of the app.
+
+Container → Running instance of an image.
+
+Dockerfile → Instructions to build an image.
+
+7. Git & GitHub Setup
+git --version
+git config --global user.name "YourName"
+git config --global user.email "your_email@example.com"
+ssh-keygen -t ed25519 -C "your_email@example.com"
+cat ~/.ssh/id_ed25519.pub
+ssh -T git@github.com
+git clone git@github.com:username/repository.git
+git add .
+git commit -m "commit message"
+git push -u origin main
+git branch
+git checkout -b dev
+
+
+Explanation:
+
+SSH authentication ensures secure GitHub connection.
+
+git branch → Check branches; checkout -b dev → Create a feature branch.
+
+8. Docker – Node.js Express Application
+Step 1: Install Node.js
+node -v
+npm -v
+
+
+Install if not present from official Node.js website
+.
+
+Step 2: Create Project Folder
+mkdir docker-basic-app
+cd docker-basic-app
+
+Step 3: Create package.json
+{
+  "name": "docker-basic-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
+Step 4: Install Dependencies
+npm install
+
+Step 5: Create app.js
+const express = require('express');
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('Hello from Docker!');
+});
+
+app.listen(3000, () => {
+  console.log('App running on port 3000');
+});
+
+Step 6: Test Application Locally
+node app.js
+
+
+Open browser: http://localhost:3000
+
+9. Dockerize Node.js App
+Step 7: Create Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["node", "app.js"]
+
+Step 8: Build Docker Image
+docker build -t docker-basic-app .
+
+Step 9: Run Docker Container
+docker run -d -p 3000:3000 docker-basic-app
+docker ps
+
+
+Access app: http://localhost:3000
+
+Step 10: Stop/Remove Container & Image
+docker stop <container_id>
+docker rm <container_id>
+docker rmi docker-basic-app
+
+10. Git – Workflow Recap
+
+Initialize repository:
+
+git init
+
+
+Stage files:
+
+git add .
+
+
+Commit changes:
+
+git commit -m "Initial commit"
+
+
+Connect remote:
+
+git remote add origin git@github.com:username/repository.git
+
+
+Push code:
+
+git push -u origin main
+
+
+Update and append changes:
+
+git add .
+git commit -m "Updated file"
+git push
+
+11. Final Outcome Checklist
+
+✔ VMware setup completed
+
+✔ Ubuntu Server installed
+
+✔ SSH configured
+
+✔ VS Code remote connection established
+
+✔ Docker installed and configured
+
+✔ Node.js Express app dockerized and running
+
+✔ Docker images built, tagged, pushed, and pulled
+
+✔ GitHub SSH authentication configured
+
+✔ Containers successfully deployed
